@@ -1,0 +1,79 @@
+.cardContainer {
+    width: 300px;
+    height: 420px;
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+.cardInner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.cardFront,
+.cardBack {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.cardFront {
+    background-color: #1e293b;
+    transform: rotateY(0deg);
+}
+
+.cardBack {
+    background-color: #1e293b;
+    transform: rotateY(180deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 8px solid #3b82f6;
+}
+
+.backPattern {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, #3b82f6 10%, #1d4ed8 90%);
+    background-size: 20px 20px;
+    position: relative;
+}
+
+.backPattern::after {
+    content: "Pokemon";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 2rem;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.cardImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.shine {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(125deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0) 40%,
+            rgba(255, 255, 255, 0.2) 47%,
+            rgba(255, 255, 255, 0) 50%);
+    pointer-events: none;
+}

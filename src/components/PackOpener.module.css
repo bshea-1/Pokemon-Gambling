@@ -1,0 +1,145 @@
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.centerContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.instruction {
+    margin-top: 20px;
+    color: var(--foreground);
+    opacity: 0.7;
+    font-size: 1.2rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.5;
+    }
+}
+
+.burst {
+    width: 100px;
+    height: 100px;
+    background: white;
+    border-radius: 50%;
+    animation: explode 0.5s ease-out forwards;
+}
+
+@keyframes explode {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(20);
+        opacity: 0;
+    }
+}
+
+.cardsContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 800px;
+    height: 500px;
+    position: relative;
+}
+
+.cardWrapper {
+    width: 300px;
+    height: 420px;
+    position: relative;
+    perspective: 1000px;
+}
+
+.activeCard {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.navButton {
+    font-size: 2rem;
+    color: var(--foreground);
+    background: rgba(255, 255, 255, 0.1);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 20px;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.navButton:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.navButton:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.controls {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.counter {
+    font-size: 1.1rem;
+    color: var(--foreground);
+    opacity: 0.8;
+}
+
+.openAnother {
+    padding: 12px 24px;
+    background: var(--accent);
+    color: #000;
+    font-weight: bold;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px var(--accent-glow);
+    transition: transform 0.2s;
+}
+
+.openAnother:hover {
+    transform: translateY(-2px);
+}
