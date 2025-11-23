@@ -54,7 +54,11 @@ export async function getSets(): Promise<PokemonSet[]> {
         }
 
         const data = await res.json();
-        return data;
+        return data.map((set: PokemonSet) => ({
+            ...set,
+            logo: set.logo ? `${set.logo}.png` : undefined,
+            symbol: set.symbol ? `${set.symbol}.png` : undefined,
+        }));
     } catch (error) {
         console.error("Error fetching sets:", error);
         return [];
@@ -71,7 +75,11 @@ export async function getSet(setId: string): Promise<PokemonSet | null> {
         if (!res.ok) return null;
 
         const data = await res.json();
-        return data;
+        return {
+            ...data,
+            logo: data.logo ? `${data.logo}.png` : undefined,
+            symbol: data.symbol ? `${data.symbol}.png` : undefined,
+        };
     } catch (error) {
         console.error(`Error fetching set ${setId}:`, error);
         return null;
