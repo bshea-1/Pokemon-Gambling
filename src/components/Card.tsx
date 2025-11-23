@@ -18,10 +18,12 @@ export default function Card({ card, isRevealed, onReveal }: CardProps) {
     // If isRevealed is false, we show the back.
     // However, we might want an animation where it starts back-up and flips.
 
+    const isRare = !card.rarity.toLowerCase().includes("common") && !card.rarity.toLowerCase().includes("uncommon");
+
     return (
         <div className={styles.cardContainer} onClick={onReveal}>
             <motion.div
-                className={styles.cardInner}
+                className={`${styles.cardInner} ${isRare && isRevealed ? styles.rareGlow : ''}`}
                 initial={false}
                 animate={{ rotateY: isRevealed ? 0 : 180 }}
                 transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
@@ -31,13 +33,12 @@ export default function Card({ card, isRevealed, onReveal }: CardProps) {
                 <div className={styles.cardFront}>
                     {card.image && <img src={`${card.image}/high.webp`} alt={card.name} className={styles.cardImage} />}
                     {!card.image && <div className={styles.cardImage}>No Image</div>}
+                    {isRare && <div className={styles.holoOverlay} />}
                     <div className={styles.shine} />
                 </div>
 
                 {/* Back */}
-                <div className={styles.cardBack}>
-                    <div className={styles.backPattern} />
-                </div>
+                <div className={styles.cardBack} />
             </motion.div>
         </div>
     );

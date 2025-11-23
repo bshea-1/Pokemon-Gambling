@@ -1,9 +1,11 @@
 .packContainer {
     width: 280px;
     height: 400px;
-    cursor: pointer;
     position: relative;
     perspective: 1000px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .packBody {
@@ -17,9 +19,51 @@
     display: flex;
     flex-direction: column;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1;
 }
 
-.crimpTop,
+.foilTexture {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        linear-gradient(125deg, transparent 35%, rgba(255, 255, 255, 0.3) 45%, transparent 55%),
+        repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.05) 10px, rgba(255, 255, 255, 0.05) 20px);
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.crimpTop {
+    height: 40px;
+    width: 100%;
+    background: repeating-linear-gradient(90deg,
+            #334155,
+            #334155 2px,
+            #1e293b 2px,
+            #1e293b 4px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 10;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.crimpTop:active {
+    cursor: grabbing;
+}
+
+.pullTab {
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+}
+
 .crimpBottom {
     height: 20px;
     width: 100%;
@@ -29,6 +73,7 @@
             #1e293b 2px,
             #1e293b 4px);
     opacity: 0.8;
+    margin-top: auto;
 }
 
 .packContent {

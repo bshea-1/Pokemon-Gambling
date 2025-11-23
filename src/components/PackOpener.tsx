@@ -74,7 +74,6 @@ export default function PackOpener({ set, pool }: PackOpenerProps) {
                         className={styles.centerContent}
                     >
                         <Pack set={set} onOpen={handleOpenPack} />
-                        <p className={styles.instruction}>Tap to Open</p>
                     </motion.div>
                 )}
 

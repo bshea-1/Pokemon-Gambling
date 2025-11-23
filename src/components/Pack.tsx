@@ -10,23 +10,41 @@ interface PackProps {
 }
 
 export default function Pack({ set, onOpen }: PackProps) {
+    const handleDragEnd = (event: any, info: any) => {
+        if (info.offset.y > 50) {
+            onOpen();
+        }
+    };
+
     return (
-        <motion.div
-            className={styles.packContainer}
-            whileHover={{ scale: 1.05, rotate: [0, -1, 1, -1, 0] }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onOpen}
-        >
-            <div className={styles.packBody}>
-                <div className={styles.crimpTop} />
+        <div className={styles.packContainer}>
+            <motion.div
+                className={styles.crimpTop}
+                drag="y"
+                dragConstraints={{ top: 0, bottom: 100 }}
+                dragElastic={0.2}
+                onDragEnd={handleDragEnd}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+            >
+                <div className={styles.pullTab} />
+            </motion.div>
+
+            <motion.div
+                className={styles.packBody}
+                initial={{ scale: 1 }}
+                whileHover={{ scale: 1.02 }}
+            >
+                <div className={styles.foilTexture} />
                 <div className={styles.packContent}>
                     {set.logo && <img src={set.logo} alt={set.name} className={styles.setLogo} />}
                     {!set.logo && <div className={styles.setName}>{set.name}</div>}
                     <div className={styles.packText}>10 Additional Cards</div>
+                    <div className={styles.packText} style={{ fontSize: '0.7rem', marginTop: '5px' }}>Swipe Top Down to Open</div>
                 </div>
                 <div className={styles.crimpBottom} />
                 <div className={styles.shine} />
-            </div>
-        </motion.div>
+            </motion.div>
+        </div>
     );
 }
