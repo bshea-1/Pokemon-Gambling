@@ -3,11 +3,10 @@
 import { PokemonCard, PokemonSet } from "@/lib/pokemon-api";
 import { generatePack } from "@/lib/pack-logic";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Pack from "./Pack";
 import Card from "./Card";
 import styles from "./PackOpener.module.css";
-import clsx from "clsx";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface PackOpenerProps {
     set: PokemonSet;
@@ -19,10 +18,20 @@ export default function PackOpener({ set, pool }: PackOpenerProps) {
     const [pack, setPack] = useState<PokemonCard[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [revealedIndices, setRevealedIndices] = useState<Set<number>>(new Set());
+    const [particles, setParticles] = useState<Array<{ id: number, x: number, y: number }>>([]);
 
     const handleOpenPack = () => {
         console.log("Opening pack...");
         setStage("opening");
+
+        // Create particle burst
+        const newParticles = Array.from({ length: 20 }, (_, i) => ({
+            id: Date.now() + i,
+            x: Math.random() * 100 - 50,
+            y: Math.random() * 100 - 50
+        }));
+        setParticles(newParticles);
+
         // Simulate animation delay
         setTimeout(() => {
             console.log("Generating pack from pool size:", pool.length);
@@ -32,7 +41,14 @@ export default function PackOpener({ set, pool }: PackOpenerProps) {
             setStage("opened");
             setCurrentIndex(0);
             setRevealedIndices(new Set());
+            setParticles([]);
         }, 1500);
+    };
+
+    const handleReveal = () => {
+        if (!revealedIndices.has(currentIndex)) {
+            setRevealedIndices(new Set([...revealedIndices, currentIndex]));
+        }
     };
 
     const handleNext = () => {
@@ -47,15 +63,7 @@ export default function PackOpener({ set, pool }: PackOpenerProps) {
         }
     };
 
-    const handleReveal = (index: number) => {
-        if (!revealedIndices.has(index)) {
-            const newRevealed = new Set(revealedIndices);
-            newRevealed.add(index);
-            setRevealedIndices(newRevealed);
-        }
-    };
-
-    const reset = () => {
+    const handleOpenAnother = () => {
         setStage("unopened");
         setPack([]);
         setCurrentIndex(0);
@@ -67,10 +75,11 @@ export default function PackOpener({ set, pool }: PackOpenerProps) {
             <AnimatePresence mode="wait">
                 {stage === "unopened" && (
                     <motion.div
-                        key="pack"
+                        key="unopened"
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 1.5, filter: "blur(10px)" }}
+                        exit={{ opacity: 0, scale: 1.2 }}
+                        transition={{ duration: 0.5 }}
                         className={styles.centerContent}
                     >
                         <Pack set={set} onOpen={handleOpenPack} />
@@ -80,84 +89,82 @@ export default function PackOpener({ set, pool }: PackOpenerProps) {
                 {stage === "opening" && (
                     <motion.div
                         key="opening"
-                        className={styles.centerContent}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
+                        initial={{ scale: 1 }}
+                        animate={{ scale: 1.5, opacity: 0 }}
                         exit={{ opacity: 0 }}
+                        transition={{ duration: 1.5 }}
+                        className={styles.centerContent}
                     >
-                        <div className={styles.burst} />
+                        <div className={styles.burst}>
+                            {particles.map((particle) => (
+                                <motion.div
+                                    key={particle.id}
+                                    className={styles.particle}
+                                    initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                                    animate={{
+                                        x: particle.x * 5,
+                                        y: particle.y * 5,
+                                        opacity: 0,
+                                        scale: 0
+                                    }}
+                                    transition={{ duration: 1.5, ease: "easeOut" }}
+                                />
+                            ))}
+                        </div>
                     </motion.div>
                 )}
 
-                {stage === "opened" && (
+                {stage === "opened" && pack.length > 0 && (
                     <motion.div
-                        key="cards"
-                        className={styles.cardsContainer}
+                        key="opened"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                        className={styles.cardsContainer}
                     >
                         <div className={styles.carousel}>
                             <button
-                                className={clsx(styles.navButton, styles.prev)}
                                 onClick={handlePrev}
                                 disabled={currentIndex === 0}
+                                className={styles.navButton}
                             >
-                                ←
+                                ‹
                             </button>
 
-                            <div className={styles.cardWrapper}>
-                                <AnimatePresence mode="popLayout" custom={currentIndex}>
-                                    {pack.map((card, index) => (
-                                        index === currentIndex && (
-                                            <motion.div
-                                                key={card.id}
-                                                initial={{ x: 300, opacity: 0, rotateY: -15 }}
-                                                animate={{ x: 0, opacity: 1, rotateY: 0 }}
-                                                exit={{ x: -300, opacity: 0, rotateY: 15 }}
-                                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                                drag="x"
-                                                dragConstraints={{ left: 0, right: 0 }}
-                                                dragElastic={0.2}
-                                                onDragEnd={(e, { offset, velocity }) => {
-                                                    const swipe = offset.x;
-
-                                                    if (swipe < -100) {
-                                                        handleNext();
-                                                    } else if (swipe > 100) {
-                                                        handlePrev();
-                                                    }
-                                                }}
-                                                className={styles.activeCard}
-                                            >
-                                                <Card
-                                                    card={card}
-                                                    isRevealed={revealedIndices.has(index)}
-                                                    onReveal={() => handleReveal(index)}
-                                                />
-                                            </motion.div>
-                                        )
-                                    ))}
-                                </AnimatePresence>
-                            </div>
+                            <motion.div
+                                className={styles.cardWrapper}
+                                key={currentIndex}
+                                initial={{ x: 100, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{
+                                    type: "spring",
+                                    stiffness: 300,
+                                    damping: 30
+                                }}
+                            >
+                                <Card
+                                    card={pack[currentIndex]}
+                                    isRevealed={revealedIndices.has(currentIndex)}
+                                    onReveal={handleReveal}
+                                />
+                            </motion.div>
 
                             <button
-                                className={clsx(styles.navButton, styles.next)}
                                 onClick={handleNext}
                                 disabled={currentIndex === pack.length - 1}
+                                className={styles.navButton}
                             >
-                                →
+                                ›
                             </button>
                         </div>
 
                         <div className={styles.controls}>
-                            <div className={styles.counter}>
-                                Card {currentIndex + 1} / {pack.length}
-                            </div>
-                            {currentIndex === pack.length - 1 && revealedIndices.has(currentIndex) && (
-                                <button className={styles.openAnother} onClick={reset}>
-                                    Open Another Pack
-                                </button>
-                            )}
+                            <p className={styles.counter}>
+                                Card {currentIndex + 1} of {pack.length}
+                            </p>
+                            <button onClick={handleOpenAnother} className={styles.openAnother}>
+                                Open Another Pack
+                            </button>
                         </div>
                     </motion.div>
                 )}

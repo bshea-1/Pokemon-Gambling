@@ -37,7 +37,16 @@ export default function Pack({ set, onOpen }: PackProps) {
             >
                 <div className={styles.foilTexture} />
                 <div className={styles.packContent}>
-                    {set.logo && <img src={set.logo} alt={set.name} className={styles.setLogo} />}
+                    {set.logo && (
+                        <div style={{
+                            background: 'rgba(0,0,0,0.3)',
+                            padding: '15px',
+                            borderRadius: '10px',
+                            backdropFilter: 'blur(5px)'
+                        }}>
+                            <img src={set.logo} alt={set.name} className={styles.setLogo} />
+                        </div>
+                    )}
                     {!set.logo && <div className={styles.setName}>{set.name}</div>}
                     <div className={styles.packText}>10 Additional Cards</div>
                     <div className={styles.packText} style={{ fontSize: '0.7rem', marginTop: '5px' }}>Swipe Top Down to Open</div>
