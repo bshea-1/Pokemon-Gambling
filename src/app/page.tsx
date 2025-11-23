@@ -2,8 +2,24 @@ import { getSets } from "@/lib/pokemon-api";
 import Link from "next/link";
 import styles from "./page.module.css";
 
+// Force dynamic rendering to avoid build-time API calls
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const sets = await getSets();
+
+  // If no sets loaded, show a message
+  if (sets.length === 0) {
+    return (
+      <main className={styles.main}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>Pokemon TCG Pack Opener</h1>
+          <p className={styles.subtitle}>Unable to load sets. Please try again later.</p>
+        </header>
+      </main>
+    );
+  }
+
   // Filter for main sets or popular ones to avoid clutter
   const displaySets = sets.slice(0, 12); // Top 12 newest sets
 
