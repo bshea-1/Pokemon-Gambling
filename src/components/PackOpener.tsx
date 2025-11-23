@@ -21,10 +21,13 @@ export default function PackOpener({ set, pool }: PackOpenerProps) {
     const [revealedIndices, setRevealedIndices] = useState<Set<number>>(new Set());
 
     const handleOpenPack = () => {
+        console.log("Opening pack...");
         setStage("opening");
         // Simulate animation delay
         setTimeout(() => {
+            console.log("Generating pack from pool size:", pool.length);
             const newPack = generatePack(pool);
+            console.log("Pack generated:", newPack);
             setPack(newPack);
             setStage("opened");
             setCurrentIndex(0);

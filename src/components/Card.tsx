@@ -29,7 +29,8 @@ export default function Card({ card, isRevealed, onReveal }: CardProps) {
             >
                 {/* Front */}
                 <div className={styles.cardFront}>
-                    <img src={`${card.image}/high.webp`} alt={card.name} className={styles.cardImage} />
+                    {card.image && <img src={`${card.image}/high.webp`} alt={card.name} className={styles.cardImage} />}
+                    {!card.image && <div className={styles.cardImage}>No Image</div>}
                     <div className={styles.shine} />
                 </div>
 

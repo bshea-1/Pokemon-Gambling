@@ -80,7 +80,6 @@ export async function getSet(setId: string): Promise<PokemonSet | null> {
 
 export async function getCardsForSet(setId: string): Promise<PokemonCard[]> {
     try {
-        // TCGdex returns the full set with cards included
         const set = await getSet(setId);
 
         if (!set || !set.cards) {
@@ -88,10 +87,42 @@ export async function getCardsForSet(setId: string): Promise<PokemonCard[]> {
             return [];
         }
 
-        // Fetch full card details for each card in the set
-        // For now, we'll use the basic card info from the set
-        // If we need full details, we'd need to fetch each card individually
-        return set.cards;
+        // Fetch Commons and Uncommons to determine rarity
+        // We fetch these lists to map IDs to rarities without fetching every single card detail
+        const [commonsRes, uncommonsRes] = await Promise.all([
+            fetch(`${API_URL}/cards?set=${setId}&rarity=Common`, { headers, next: { revalidate: 3600 } }),
+            fetch(`${API_URL}/cards?set=${setId}&rarity=Uncommon`, { headers, next: { revalidate: 3600 } })
+        ]);
+
+        const commonsData = commonsRes.ok ? await commonsRes.json() : [];
+        const uncommonsData = uncommonsRes.ok ? await uncommonsRes.json() : [];
+
+        const commonIds = new Set(commonsData.map((c: any) => c.id));
+        const uncommonIds = new Set(uncommonsData.map((c: any) => c.id));
+
+        // Map rarity to cards and ensure all required fields are present
+        const cardsWithRarity = set.cards.map(card => {
+            let rarity = "Rare"; // Default to Rare for anything not Common/Uncommon (includes Holo, Ultra, Secret, etc.)
+
+            if (commonIds.has(card.id)) {
+                rarity = "Common";
+            } else if (uncommonIds.has(card.id)) {
+                rarity = "Uncommon";
+            }
+
+            return {
+                ...card,
+                rarity,
+                // Populate the set info which is missing from the card summary
+                set: {
+                    id: set.id,
+                    name: set.name,
+                    cardCount: set.cardCount
+                }
+            } as PokemonCard;
+        });
+
+        return cardsWithRarity;
     } catch (error) {
         console.error(`Error fetching cards for set ${setId}:`, error);
         return [];
