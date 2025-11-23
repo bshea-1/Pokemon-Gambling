@@ -34,11 +34,12 @@ export default async function Home() {
         {displaySets.map((set) => (
           <Link href={`/open?setId=${set.id}`} key={set.id} className={styles.card}>
             <div className={styles.logoWrapper}>
-              <img src={set.images.logo} alt={set.name} className={styles.setLogo} />
+              {set.logo && <img src={set.logo} alt={set.name} className={styles.setLogo} />}
+              {!set.logo && <div className={styles.noLogo}>{set.name}</div>}
             </div>
             <div className={styles.setInfo}>
               <h2>{set.name}</h2>
-              <p>{set.releaseDate}</p>
+              <p>{set.releaseDate || 'Release date unknown'}</p>
             </div>
           </Link>
         ))}
